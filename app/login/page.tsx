@@ -7,11 +7,11 @@ import { Input } from "@heroui/input";
 const Login = () => {
   return (
     <section className="flex flex-col mx-auto gap-4 px-8 md:px-10 py-8 md:py-0">
-      <div className="rounded-lg shadow-md w-full max-w-3xl">
+      <div className="w-full max-w-3xl">
         <div className="flex justify-center mb-6">
         <Image 
             alt="Login Illustration" 
-            className="filter invert hue-rotate-180" 
+            // className="filter invert hue-rotate-180" 
             height={500} 
             src="/6240693.svg" 
             width={500}

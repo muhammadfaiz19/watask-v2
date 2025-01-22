@@ -6,10 +6,9 @@ import { Button } from "@heroui/button";
 import { Checkbox } from "@heroui/checkbox";
 import { Input, Textarea } from "@heroui/input";
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { toast } from "react-hot-toast";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
 import api from "@/api/api";
-
 
 type User = {
   _id: string;
@@ -158,6 +157,19 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
           Create Task
         </Button>
       </form>
+      <ToastContainer
+        draggable
+        pauseOnFocusLoss
+        pauseOnHover
+        autoClose={5000}
+        closeOnClick={false}
+        hideProgressBar={false}
+        newestOnTop={false}
+        position="top-right"
+        rtl={false}
+        theme="dark"
+        transition={Bounce}
+      />
     </>
   );
 };
