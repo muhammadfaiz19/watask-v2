@@ -2,68 +2,48 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "WaTask",
-  description: "Make beautiful websites regardless of your design experience.",
+  description: "WaTask is a task management platform that integrates seamlessly with WhatsApp. Students can receive automated task reminders, set deadlines, and manage their academic tasks all through WhatsApp, making it easier to stay on top of deadlines and projects.",
   navItems: [
     {
       label: "Home",
       href: "/",
     },
     {
-      label: "Docs",
-      href: "/docs",
-    },
-    {
-      label: "Pricing",
-      href: "/pricing",
-    },
-    {
-      label: "Blog",
-      href: "/blog",
-    },
-    {
       label: "About",
       href: "/about",
     },
-  ],
-  navMenuItems: [
     {
       label: "Profile",
       href: "/profile",
     },
     {
-      label: "Dashboard",
-      href: "/dashboard",
+      label: "Settings",
+      href: "/settings",
+    },
+  ],
+  navMenuItems: [
+    {
+      label: "Home",
+      href: "/",
     },
     {
-      label: "Projects",
-      href: "/projects",
+      label: "Profile",
+      href: "/profile",
     },
     {
-      label: "Team",
-      href: "/team",
-    },
-    {
-      label: "Calendar",
-      href: "/calendar",
+      label: "About",
+      href: "/about",
     },
     {
       label: "Settings",
       href: "/settings",
     },
     {
-      label: "Help & Feedback",
-      href: "/help-feedback",
-    },
-    {
-      label: "Logout",
-      href: "/logout",
+      label: "Login",
+      href: "/login",
     },
   ],
   links: {
-    github: "https://github.com/heroui-inc/heroui",
-    twitter: "https://twitter.com/hero_ui",
-    docs: "https://heroui.com",
-    discord: "https://discord.gg/9b6yyZKmH4",
-    sponsor: "https://patreon.com/jrgarciadev",
+    github: "https://github.com/muhamamdfaiz19/watask-v2",
   },
 };
