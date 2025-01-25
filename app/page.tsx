@@ -1,14 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
   const [refresh, setRefresh] = useState(false);
+  const { protectRoute } = useAuth();
 
+  useEffect(() => {
+    protectRoute();
+  }, []);
   const handleTaskAdded = () => {
-    setRefresh(!refresh); // Toggle refresh state
+    setRefresh(!refresh); 
   };
 
   return (

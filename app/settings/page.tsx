@@ -7,6 +7,7 @@ import api from "@/api/api";
 import UserForm from "@/components/UserForm";
 import UserList from "@/components/UserList";
 import { User } from "@/types/User";
+import { withAdminProtection } from "@/components/ProtectedRoute";
 
 const UsersPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -46,4 +47,4 @@ const UsersPage: React.FC = () => {
   );
 };
 
-export default UsersPage;
+export default withAdminProtection(UsersPage);
