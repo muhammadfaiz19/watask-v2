@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { format } from "date-fns";
@@ -9,8 +7,17 @@ import { Input, Textarea } from "@heroui/input";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { Accordion, AccordionItem } from "@heroui/accordion";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+} from "@heroui/modal";
 
 import api from "@/api/api";
+
 interface TaskListProps {
   refresh: boolean;
 }
@@ -25,12 +32,12 @@ interface Task {
 
 const TaskList: React.FC<TaskListProps> = ({ refresh }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [updatedTask, setUpdatedTask] = useState<Task | null>(null);
+  const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onOpenChange: onUpdateOpenChange } = useDisclosure();
+  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteOpenChange } = useDisclosure();
 
   useEffect(() => {
-    api
-      .get("/tasks")
+    api.get("/tasks")
       .then((response) => setTasks(response.data))
       .catch((err) => {
         console.error("Failed to fetch tasks", err);
@@ -39,8 +46,7 @@ const TaskList: React.FC<TaskListProps> = ({ refresh }) => {
   }, [refresh]);
 
   const deleteTask = (id: string) => {
-    api
-      .delete(`/tasks/${id}`)
+    api.delete(`/tasks/${id}`)
       .then(() => {
         setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
         toast.success("Task deleted successfully!");
@@ -51,23 +57,19 @@ const TaskList: React.FC<TaskListProps> = ({ refresh }) => {
       });
   };
 
-  const handleEditClick = (task: Task) => {
-    setEditingTaskId(task._id);
-    setUpdatedTask({ ...task });
-  };
-
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
-    setUpdatedTask((prevTask) => (prevTask ? { ...prevTask, [name]: value } : null));
+    setUpdatedTask((prevTask) =>
+      prevTask ? { ...prevTask, [name]: value } : null
+    );
   };
 
   const handleUpdateTask = () => {
     if (updatedTask && updatedTask._id) {
-      api
-        .put(`/tasks/${updatedTask._id}`, updatedTask)
+      api.put(`/tasks/${updatedTask._id}`, updatedTask)
         .then(() => {
           setTasks((prevTasks) =>
             prevTasks.map((task) =>
@@ -75,7 +77,7 @@ const TaskList: React.FC<TaskListProps> = ({ refresh }) => {
             )
           );
           toast.success("Task updated successfully!");
-          setEditingTaskId(null);
+          onUpdateOpenChange();
         })
         .catch((err) => {
           console.error("Failed to update task", err);
@@ -102,78 +104,107 @@ const TaskList: React.FC<TaskListProps> = ({ refresh }) => {
             </div>
 
             <div className="flex space-x-2 mt-4">
-              <Button color="primary" onPress={() => handleEditClick(task)}>
-                Edit
+              <Button color="primary" onPress={() => {
+                setUpdatedTask({ ...task });
+                onUpdateOpen();
+              }}>
+                Update
               </Button>
-              <Button
-                color="danger"
-                type="button"
-                onPress={() => deleteTask(task._id)}
-              >
+
+              <Button color="danger" onPress={() => {
+                onDeleteOpen();
+              }}>
                 Delete
               </Button>
             </div>
-
-            {editingTaskId === task._id && updatedTask && (
-              <div className="mt-6 p-6 rounded-md shadow-lg">
-                <h3 className="text-lg font-semibold mb-4">Edit Task</h3>
-
-                <div className="space-y-4">
-                  <Input
-                    fullWidth
-                    aria-label="Task Name"
-                    label="Task Name"
-                    name="name"
-                    value={updatedTask.name}
-                    onChange={handleInputChange}
-                  />
-                  <Textarea
-                    fullWidth
-                    aria-label="Description"
-                    label="Description"
-                    name="description"
-                    value={updatedTask.description}
-                    onChange={handleInputChange}
-                  />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Input
-                      fullWidth
-                      aria-label="Deadline Date"
-                      label="Deadline Date"
-                      name="deadlineDate"
-                      type="date"
-                      value={updatedTask.deadlineDate}
-                      onChange={handleInputChange}
-                    />
-                    <Input
-                      fullWidth
-                      aria-label="Deadline Time"
-                      label="Deadline Time"
-                      name="deadlineTime"
-                      type="time"
-                      value={updatedTask.deadlineTime}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-6 flex justify-end space-x-4">
-                  <Button color="primary" type="button" onPress={handleUpdateTask}>
-                    Update Task
-                  </Button>
-                  <Button
-                    color="default"
-                    type="button"
-                    onPress={() => setEditingTaskId(null)}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            )}
           </AccordionItem>
         ))}
       </Accordion>
+
+      {/* Update Modal */}
+      <Modal isOpen={isUpdateOpen} onOpenChange={onUpdateOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>Update Task</ModalHeader>
+              <ModalBody>
+                {updatedTask && (
+                  <div className="space-y-4">
+                    <Input
+                      fullWidth
+                      label="Task Name"
+                      name="name"
+                      value={updatedTask.name}
+                      onChange={handleInputChange}
+                    />
+                    <Textarea
+                      fullWidth
+                      label="Description"
+                      name="description"
+                      value={updatedTask.description}
+                      onChange={handleInputChange}
+                    />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Input
+                        fullWidth
+                        label="Deadline Date"
+                        name="deadlineDate"
+                        type="date"
+                        value={updatedTask.deadlineDate}
+                        onChange={handleInputChange}
+                      />
+                      <Input
+                        fullWidth
+                        label="Deadline Time"
+                        name="deadlineTime"
+                        type="time"
+                        value={updatedTask.deadlineTime}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="default" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button color="primary" onPress={handleUpdateTask}>
+                  Update Task
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal isOpen={isDeleteOpen} onOpenChange={onDeleteOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>Confirm Delete</ModalHeader>
+              <ModalBody>
+                Are you sure you want to delete this task?
+              </ModalBody>
+              <ModalFooter>
+                <Button color="default" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button 
+                  color="danger" 
+                  onPress={() => {
+                    deleteTask(updatedTask?._id || '');
+                    onClose();
+                  }}
+                >
+                  Delete
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

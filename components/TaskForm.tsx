@@ -35,7 +35,7 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
 
-  // Fetch users ketika komponen di-mount
+  // Fetch users when component mounts
   useEffect(() => {
     api
       .get("/users")
@@ -43,7 +43,7 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
       .catch((err) => console.error("Failed to fetch users", err));
   }, []);
 
-  // Handle perubahan input
+  // Handle input changes
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -52,7 +52,7 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
     setTask((prevTask) => ({ ...prevTask, [name]: value }));
   };
 
-  // Handle checkbox untuk assign semua user
+  // Handle checkbox for assigning all users
   const handleUserSelection = (e: ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked;
 
@@ -67,12 +67,34 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
     }
   };
 
-  // Handle submit form
+  // Handle individual user selection
+  // const handleIndividualUserSelect = (userId: string) => {
+  //   setTask((prevTask) => {
+  //     const newUsers = prevTask.users.includes(userId)
+  //       ? prevTask.users.filter(id => id !== userId)
+  //       : [...prevTask.users, userId];
+
+  //     return { ...prevTask, users: newUsers };
+  //   });
+  // };
+
+  // Handle form submission
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!isCheckboxChecked) {
-      toast.error("Please select the checkbox to assign users.");
+    // Validate deadline
+    const selectedDeadline = new Date(`${task.deadlineDate}T${task.deadlineTime}`);
+    const currentDate = new Date();
+
+    if (selectedDeadline <= currentDate) {
+      toast.error("Deadline must be in the future.");
+
+      return;
+    }
+
+    // Validate user selection
+    if (task.users.length === 0) {
+      toast.error("Please select at least one user.");
 
       return;
     }
@@ -89,7 +111,7 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
           users: [],
         });
         setIsCheckboxChecked(false);
-        onTaskAdded(); // Panggil fungsi refresh data
+        onTaskAdded(); // Call data refresh function
       })
       .catch(() => {
         toast.error("Failed to create task. Please try again.");
@@ -145,14 +167,30 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
             onChange={handleInputChange}
           />
         </div>
+        
         <Checkbox
-          required
           color="primary"
           isSelected={isCheckboxChecked}
           onChange={handleUserSelection}
         >
           Assign to All Users
         </Checkbox>
+
+        {/* {!isCheckboxChecked && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-4">
+            {users.map(user => (
+              <Checkbox
+                key={user._id}
+                color="primary"
+                isSelected={task.users.includes(user._id)}
+                onChange={() => handleIndividualUserSelect(user._id)}
+              >
+                {user.name}
+              </Checkbox>
+            ))}
+          </div>
+        )} */}
+
         <Button fullWidth color="primary" type="submit">
           Create Task
         </Button>
