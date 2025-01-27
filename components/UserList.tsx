@@ -2,7 +2,7 @@
 
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import {
   Modal,
@@ -18,7 +18,7 @@ import {
   TableBody,
   TableColumn,
   TableRow,
-  TableCell
+  TableCell,
 } from "@heroui/table";
 import { Select, SelectItem } from "@heroui/select";
 
@@ -26,83 +26,47 @@ import { User } from "@/types/User";
 import api from "@/api/api";
 
 interface UserListProps {
-  refresh: boolean;
+  users: User[]; // Updated props
+  onDelete: (id: string) => Promise<void>; // Updated props
 }
 
 const ROLE_OPTIONS = [
-  { label: 'Admin', value: 'admin' },
-  { label: 'User', value: 'user' },
+  { label: "Admin", value: "admin" },
+  { label: "User", value: "user" },
 ];
 
-const UserList: React.FC<UserListProps> = ({ refresh }) => {
-  const [users, setUsers] = useState<User[]>([]);
+const UserList: React.FC<UserListProps> = ({ users, onDelete }) => {
   const [updatedUser, setUpdatedUser] = useState<User | null>(null);
   const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onOpenChange: onUpdateOpenChange } = useDisclosure();
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteOpenChange } = useDisclosure();
 
-  useEffect(() => {
-    api.get("/users")
-      .then((response) => setUsers(response.data))
-      .catch((err) => {
-        console.error("Failed to fetch users", err);
-        toast.error("Failed to load users. Please try again.");
-      });
-  }, [refresh]);
-
-  const deleteUser = (id: string) => {
-    api.delete(`/users/${id}`)
-      .then(() => {
-        setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
-        toast.success("User deleted successfully!");
-        onDeleteOpenChange();
-      })
-      .catch((err) => {
-        console.error("Failed to delete user", err);
-        toast.error("Failed to delete user. Please try again.");
-      });
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    setUpdatedUser((prevUser) =>
-      prevUser ? { ...prevUser, [name]: value } : null
-    );
+    setUpdatedUser((prevUser) => (prevUser ? { ...prevUser, [name]: value } : null));
   };
 
   const handleRoleChange = (value: string) => {
-    setUpdatedUser((prevUser) =>
-      prevUser ? { ...prevUser, role: value } : null
-    );
+    setUpdatedUser((prevUser) => (prevUser ? { ...prevUser, role: value } : null));
   };
 
-  const handleUpdateUser = () => {
+  const handleUpdateUser = async () => {
     if (updatedUser && updatedUser._id) {
-      api.put(`/users/${updatedUser._id}`, updatedUser)
-        .then(() => {
-          setUsers((prevUsers) =>
-            prevUsers.map((user) =>
-              user._id === updatedUser._id ? updatedUser : user
-            )
-          );
-          toast.success("User updated successfully!");
-          onUpdateOpenChange();
-        })
-        .catch((err) => {
-          console.error("Failed to update user", err);
-          toast.error("Failed to update user. Please try again.");
-        });
+      try {
+        await api.put(`/users/${updatedUser._id}`, updatedUser);
+        toast.success("User updated successfully!");
+        onUpdateOpenChange();
+      } catch (err) {
+        console.error("Failed to update user", err);
+        toast.error("Failed to update user. Please try again.");
+      }
     }
   };
 
   return (
     <div className="max-w-4xl w-full mt-5">
       <h2 className="text-xl text-center font-semibold mb-4">User List</h2>
-      <Table 
-        className="bg-default-100/70" 
-      >
+      <Table className="bg-default-100/70">
         <TableHeader>
           <TableColumn className="font-bold text-center">Name</TableColumn>
           <TableColumn className="font-bold text-center">Phone Number</TableColumn>
@@ -120,8 +84,8 @@ const UserList: React.FC<UserListProps> = ({ refresh }) => {
               <TableCell className="text-center">{user.username}</TableCell>
               <TableCell className="text-center">{user.role}</TableCell>
               <TableCell className="text-center space-x-2">
-                <Button 
-                  color="primary" 
+                <Button
+                  color="primary"
                   onPress={() => {
                     setUpdatedUser({ ...user });
                     onUpdateOpen();
@@ -129,8 +93,8 @@ const UserList: React.FC<UserListProps> = ({ refresh }) => {
                 >
                   Update
                 </Button>
-                <Button 
-                  color="danger" 
+                <Button
+                  color="danger"
                   onPress={() => {
                     setUpdatedUser(user);
                     onDeleteOpen();
@@ -226,10 +190,10 @@ const UserList: React.FC<UserListProps> = ({ refresh }) => {
                 <Button color="default" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button 
-                  color="danger" 
+                <Button
+                  color="danger"
                   onPress={() => {
-                    deleteUser(updatedUser?._id || '');
+                    onDelete(updatedUser?._id || "");
                     onClose();
                   }}
                 >
