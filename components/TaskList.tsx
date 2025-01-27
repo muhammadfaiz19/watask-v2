@@ -33,6 +33,7 @@ interface Task {
 const TaskList: React.FC<TaskListProps> = ({ refresh }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [updatedTask, setUpdatedTask] = useState<Task | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<string>("");
   const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onOpenChange: onUpdateOpenChange } = useDisclosure();
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteOpenChange } = useDisclosure();
 
@@ -112,6 +113,7 @@ const TaskList: React.FC<TaskListProps> = ({ refresh }) => {
               </Button>
 
               <Button color="danger" onPress={() => {
+                setTaskToDelete(task._id);
                 onDeleteOpen();
               }}>
                 Delete
@@ -194,7 +196,7 @@ const TaskList: React.FC<TaskListProps> = ({ refresh }) => {
                 <Button 
                   color="danger" 
                   onPress={() => {
-                    deleteTask(updatedTask?._id || '');
+                    deleteTask(taskToDelete);
                     onClose();
                   }}
                 >
