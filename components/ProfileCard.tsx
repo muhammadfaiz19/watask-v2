@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';

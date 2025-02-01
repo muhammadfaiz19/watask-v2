@@ -38,12 +38,12 @@ const Register: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isLoading, setIsLoading] = useState(false); // Tambahkan state loading
   const router = useRouter();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    // Special handling for phone number (only digits)
     if (name === "phoneNumber") {
       const numericValue = value.replace(/\D/g, "");
 
@@ -56,7 +56,6 @@ const Register: React.FC = () => {
   };
 
   const validatePhoneNumber = (phoneNumber: string): boolean => {
-    // Validate Indonesian phone number format starting with 62 or 0
     const phoneRegex = /^(62|0)\d{9,13}$/;
 
     return phoneRegex.test(phoneNumber);
@@ -65,10 +64,8 @@ const Register: React.FC = () => {
   const validateForm = (): boolean => {
     const tempErrors: FormErrors = {};
 
-    // Name validation
     if (!formData.name.trim()) tempErrors.name = "Name is required";
 
-    // Phone number validation
     if (!formData.phoneNumber.trim()) {
       tempErrors.phoneNumber = "Phone number is required";
     } else if (!validatePhoneNumber(formData.phoneNumber)) {
@@ -76,7 +73,6 @@ const Register: React.FC = () => {
         "Invalid Indonesian phone number. Must start with 62 or 0 and be 10-13 digits long.";
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!formData.email.trim()) {
@@ -85,10 +81,8 @@ const Register: React.FC = () => {
       tempErrors.email = "Invalid email format";
     }
 
-    // Username validation
     if (!formData.username.trim()) tempErrors.username = "Username is required";
 
-    // Password validation
     if (!formData.password) {
       tempErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
@@ -105,14 +99,27 @@ const Register: React.FC = () => {
     if (validateForm()) {
       try {
         await api.post("/register", formData);
+
         toast.success("Registration successful");
-        router.push("/login");
+        setIsLoading(true); 
+
+        setTimeout(() => {
+          setIsLoading(false); 
+          router.push("/login"); 
+        }, 2000); 
       } catch (error: any) {
         toast.error(error.response?.data?.message || "Registration failed");
       }
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="animate-pulse">Redirecting to login...</div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -144,7 +151,6 @@ const Register: React.FC = () => {
             <Input
               fullWidth
               color={errors.phoneNumber ? "danger" : "default"}
-              // description="Use Indonesian format: start with 62 or 0"
               errorMessage={errors.phoneNumber}
               name="phoneNumber"
               placeholder="Phone Number (e.g., 62857...)"

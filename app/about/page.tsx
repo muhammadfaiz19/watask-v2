@@ -1,10 +1,17 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { SparklesCore } from "@/components/ui/sparkles";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 
-// List of Technologies (no export here)
+// Komponen Loading
+const Loading: React.FC = () => (
+  <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="animate-pulse text-white text-lg">Loading...</div>
+  </div>
+);
+
+// Data teknologi
 const technologies = [
   {
     title: "Next.js",
@@ -39,6 +46,31 @@ const technologies = [
 ];
 
 const AboutPage: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<any>(null); // Contoh data
+
+  // Simulasi Fetch Data
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await new Promise((resolve) =>
+          setTimeout(() => resolve(technologies), 1000)
+        );
+
+        setData(response);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) return <Loading />;
+
   return (
     <>
       {/* Hero Section */}
@@ -64,7 +96,7 @@ const AboutPage: React.FC = () => {
               particleDensity={1200}
             />
 
-            {/* Radial Gradient to prevent sharp edges */}
+            {/* Radial Gradient untuk mencegah tepi tajam */}
             <div className="absolute inset-0 w-full h-full bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]" />
           </div>
         </div>
@@ -76,7 +108,7 @@ const AboutPage: React.FC = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
             Technology Stack
           </h2>
-          <HoverEffect items={technologies} />
+          <HoverEffect items={data || []} />
         </div>
       </div>
     </>

@@ -49,6 +49,7 @@ export default function NavbarComponent() {
   };
 
   const menuItemsDesktop = [
+    { name: "Home", href: "/" },
     { name: "About", href: "/about" },
     { name: "Settings", href: "/settings" },
   ];

@@ -34,6 +34,8 @@ import api from "@/api/api";
 interface UserListProps {
   users: User[];
   onDelete: (id: string) => Promise<void>;
+  onUpdate: (user: User) => Promise<void>; 
+  
 }
 
 const ROLE_OPTIONS = [
@@ -42,7 +44,7 @@ const ROLE_OPTIONS = [
   { label: "User", value: "user" },
 ];
 
-const UserList: React.FC<UserListProps> = ({ users, onDelete }) => {
+const UserList: React.FC<UserListProps> = ({ users, onDelete, onUpdate  }) => {
   const [updatedUser, setUpdatedUser] = useState<User | null>(null);
   const {
     isOpen: isUpdateOpen,
@@ -82,6 +84,7 @@ const UserList: React.FC<UserListProps> = ({ users, onDelete }) => {
     if (updatedUser && updatedUser._id) {
       try {
         await api.put(`/users/${updatedUser._id}`, updatedUser);
+        await onUpdate(updatedUser); // Call the onUpdate prop after successful update
         toast.success("User updated successfully!");
         onUpdateOpenChange();
       } catch (err) {
@@ -90,6 +93,7 @@ const UserList: React.FC<UserListProps> = ({ users, onDelete }) => {
       }
     }
   };
+
 
   return (
     <div className="max-w-4xl w-full mt-5">

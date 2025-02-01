@@ -138,7 +138,7 @@ export default function ProfileSettings() {
         </h1>
 
         {/* Profile Information Display */}
-        <div className="mb-8 rounded-lg shadow-md p-4 sm:p-6">
+        <div className="mb-8 mt-6 rounded-lg shadow-md p-4 sm:p-6">
           <h2 className="mb-4 text-xl font-semibold sm:text-2xl">
             Profile Information
           </h2>
@@ -160,10 +160,9 @@ export default function ProfileSettings() {
         </div>
 
         {/* Action Buttons */}
-        <div className="space-y-3 sm:space-y-4 px-4 sm:px-0">
+        <div className="space-y-3 sm:space-y-4">
           <Button
             fullWidth
-            className="h-10 text-base sm:h-12 sm:text-md"
             color="primary"
             variant="solid"
             onPress={profileModal.onOpen}
@@ -172,7 +171,6 @@ export default function ProfileSettings() {
           </Button>
           <Button
             fullWidth
-            className="h-10 text-base sm:h-12 sm:text-md"
             color="primary"
             variant="bordered"
             onPress={passwordModal.onOpen}
