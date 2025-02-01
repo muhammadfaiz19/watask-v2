@@ -37,7 +37,7 @@ const UsersPage: React.FC = () => {
       console.error("Failed to delete user", err);
     }
   };
-
+  
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 px-8 md:px-10">
       <h1 className="text-3xl font-bold mb-4">User Manager</h1>

@@ -113,6 +113,7 @@ const Register: React.FC = () => {
     }
   };
 
+
   return (
     <>
       <section className="min-h-screen flex items-center justify-center">

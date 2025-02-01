@@ -6,6 +6,8 @@ interface AuthContextType {
   isLoggedIn: boolean;
   username: string | null;
   userRole: string | null;
+  user: any; // Add user property
+  setUser: (user: any) => void; // Add setUser function
   login: (token: string, user: any) => void;
   logout: () => void;
   protectRoute: (allowedRoles?: string[]) => boolean;
@@ -17,6 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null); // Add user state
   const router = useRouter();
 
   useEffect(() => {
@@ -28,6 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (user) {
       const parsedUser = JSON.parse(user);
 
+      setUser(parsedUser); // Set user if found in localStorage
       setUsername(parsedUser.username);
       setUserRole(parsedUser.role);
     }
@@ -37,6 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
     setIsLoggedIn(true);
+    setUser(user); // Set user on login
     setUsername(user.username);
     setUserRole(user.role);
   };
@@ -45,6 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
+    setUser(null); // Clear user on logout
     setUsername(null);
     setUserRole(null);
     router.push('/login');
@@ -69,13 +75,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      isLoggedIn, 
-      username, 
-      userRole, 
-      login, 
-      logout, 
-      protectRoute 
+    <AuthContext.Provider value={{
+      isLoggedIn,
+      username,
+      userRole,
+      user, // Provide user in context
+      setUser, // Provide setUser in context
+      login,
+      logout,
+      protectRoute
     }}>
       {children}
     </AuthContext.Provider>

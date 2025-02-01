@@ -1,10 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@heroui/button";
+import { useRouter } from 'next/navigation';
 
 const ForbiddenPage = () => {
+  const router = useRouter();
+
   return (
     <section className="flex flex-col items-center justify-center min-h-screen">
       <div className="max-w-md text-center">
@@ -20,11 +22,9 @@ const ForbiddenPage = () => {
         <p className="mb-6">
           Sorry, you don’t have permission to access this page. If you believe this is a mistake, please contact the administrator.
         </p>
-        <Link href="/">
-          <Button variant="ghost">
-            Go Back to Homepage
-          </Button>
-        </Link>
+        <Button variant="faded"  onPress={() => router.push('/')}>
+          Back to homepage
+        </Button>
       </div>
     </section>
   );

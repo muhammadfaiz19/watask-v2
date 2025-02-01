@@ -13,7 +13,9 @@ export const withAdminProtection = (WrappedComponent: React.ComponentType) => {
 
     useEffect(() => {
       // Cek apakah pengguna sudah login dan memiliki role admin
-      if (!isLoggedIn || userRole !== 'admin') {
+      if (!isLoggedIn) {
+        router.push('/login');
+      } else if (userRole !== 'admin') {
         router.push('/403');
       }
     }, [isLoggedIn, userRole, router]);
@@ -23,10 +25,11 @@ export const withAdminProtection = (WrappedComponent: React.ComponentType) => {
       return <WrappedComponent {...props} />;
     }
 
-    // Tampilkan null atau loading selama proses redirect
-    return null;
+    // Tampilkan loading
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    )
   };
 };
-
-// Cara menggunakan:
-// export default withAdminProtection(UsersPage);
