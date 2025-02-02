@@ -1,53 +1,55 @@
-# Next.js & HeroUI Template
+# Watask V2 (Frontend)
 
-This is a template for creating applications using Next.js 14 (app directory) and HeroUI (v2).
+Aplikasi Task Management berbasis web yang dibangun menggunakan [Next.js](https://nextjs.org/) dan [React](https://reactjs.org/). Aplikasi ini memungkinkan pengguna untuk mengelola tugas-tugas mereka dengan mudah dan efisien, termasuk pengingat melalui WhatsApp. Frontend ini terhubung dengan backend yang dijelaskan di repositori [watask-backend](https://github.com/muhammadfaiz19/watask-backend).
 
-[Try it on CodeSandbox](https://githubbox.com/heroui-inc/heroui/next-app-template)
+## Fitur
 
-## Technologies Used
+*   **Manajemen Tugas**: CRUD (Create, Read, Update, Delete) tugas dengan opsi prioritas dan tanggal jatuh tempo.
+*   **Pengingat WhatsApp**: Notifikasi pengingat tugas langsung ke WhatsApp Anda.
+*   **Manajemen User**: CRUD User, Update Profile, Update Password
+*   **Mode Gelap**: Tampilan yang nyaman di malam hari.
+*   **Tampilan Responsif**
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [HeroUI v2](https://heroui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
+## Teknologi yang Digunakan
 
-## How to Use
+*   **Next.js**: [https://nextjs.org/](https://nextjs.org/)
+*   **React**: [https://reactjs.org/](https://reactjs.org/)
+*   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+*   **Library UI**: [Hero UI](https://www.heroui.com/) dan [Aceternity UI](https://ui.aceternity.com/)
+*   **Integrasi WhatsApp**: Menggunakan WhatsApp Web JS di backend untuk integrasi WhatsApp.
 
-### Use the template with create-next-app
+## Cara Menjalankan
 
-To create a new project based on this template using `create-next-app`, run the following command:
+1.  Clone repositori ini:
 
-```bash
-npx create-next-app -e https://github.com/heroui-inc/next-app-template
-```
+    ```bash
+    git clone [https://github.com/muhammadfaiz19/watask-v2.git](https://github.com/muhammadfaiz19/watask-v2.git)
+    ```
 
-### Install dependencies
+2.  Pindah ke direktori project:
 
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+    ```bash
+    cd watask-v2
+    ```
 
-```bash
-npm install
-```
+3.  Install dependencies:
 
-### Run the development server
+    ```bash
+    npm install
+    ```
 
-```bash
-npm run dev
-```
+4.  Jalankan *development server*:
 
-### Setup pnpm (optional)
+    ```bash
+    npm run dev
+    ```
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+Buka browser Anda dan akses `http://localhost:3000` untuk melihat aplikasi. Pastikan backend juga sudah berjalan.
 
-```bash
-public-hoist-pattern[]=*@heroui/*
-```
+## Konfigurasi
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+Konfigurasi, termasuk variabel lingkungan dan koneksi ke MongoDB serta integrasi WhatsApp, dilakukan di sisi backend (repositori `watask-backend` di bawah ini). Frontend hanya perlu terhubung ke *endpoint* backend yang sesuai.
 
-## License
+## Repositori Backend
 
-Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template/blob/main/LICENSE).
+[watask-backend](https://github.com/muhammadfaiz19/watask-backend)
