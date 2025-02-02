@@ -23,7 +23,7 @@ Aplikasi Task Management berbasis web yang dibangun menggunakan [Next.js](https:
 1.  Clone repositori ini:
 
     ```bash
-    git clone [https://github.com/muhammadfaiz19/watask-v2.git](https://github.com/muhammadfaiz19/watask-v2.git)
+    git clone https://github.com/muhammadfaiz19/watask-v2.git
     ```
 
 2.  Pindah ke direktori project:
