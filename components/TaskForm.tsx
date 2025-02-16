@@ -1,19 +1,15 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable react/prop-types */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
+import React, { useState, useEffect } from "react";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 import { Button } from "@heroui/button";
 import { Checkbox } from "@heroui/checkbox";
 import { Input, Textarea } from "@heroui/input";
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { Bounce, toast, ToastContainer } from "react-toastify";
 
+import { useAuth } from "@/context/AuthContext";
 import api from "@/api/api";
-
-type User = {
-  _id: string;
-  name: string;
-};
+import { User } from "@/types/User";
 
 type Task = {
   name: string;
@@ -24,6 +20,7 @@ type Task = {
 };
 
 const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
+  const { user } = useAuth();
   const [task, setTask] = useState<Task>({
     name: "",
     description: "",
@@ -32,10 +29,9 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
     users: [],
   });
 
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState([]);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
 
-  // Fetch users when component mounts
   useEffect(() => {
     api
       .get("/users")
@@ -43,23 +39,21 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
       .catch((err) => console.error("Failed to fetch users", err));
   }, []);
 
-  // Handle input changes
   const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
     setTask((prevTask) => ({ ...prevTask, [name]: value }));
   };
 
-  // Handle checkbox for assigning all users
-  const handleUserSelection = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleUserSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked;
 
     setIsCheckboxChecked(isChecked);
 
     if (isChecked) {
-      const selectedUsers = users.map((user) => user._id);
+      const selectedUsers = users.map((user: User) => user._id);
 
       setTask((prevTask) => ({ ...prevTask, users: selectedUsers }));
     } else {
@@ -67,23 +61,11 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
     }
   };
 
-  // Handle individual user selection
-  // const handleIndividualUserSelect = (userId: string) => {
-  //   setTask((prevTask) => {
-  //     const newUsers = prevTask.users.includes(userId)
-  //       ? prevTask.users.filter(id => id !== userId)
-  //       : [...prevTask.users, userId];
-
-  //     return { ...prevTask, users: newUsers };
-  //   });
-  // };
-
-  // Handle form submission
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // Validate deadline
-    const selectedDeadline = new Date(`${task.deadlineDate}T${task.deadlineTime}`);
+    const selectedDeadline = new Date(
+      `${task.deadlineDate}T${task.deadlineTime}`
+    );
     const currentDate = new Date();
 
     if (selectedDeadline <= currentDate) {
@@ -92,7 +74,6 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
       return;
     }
 
-    // Validate user selection
     if (task.users.length === 0) {
       toast.error("Please select at least one user.");
 
@@ -111,12 +92,14 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
           users: [],
         });
         setIsCheckboxChecked(false);
-        onTaskAdded(); // Call data refresh function
+        onTaskAdded();
       })
       .catch(() => {
         toast.error("Failed to create task. Please try again.");
       });
   };
+
+  const isAdmin = user?.role === "admin";
 
   return (
     <>
@@ -167,7 +150,7 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
             onChange={handleInputChange}
           />
         </div>
-        
+
         <Checkbox
           color="primary"
           isSelected={isCheckboxChecked}
@@ -176,24 +159,25 @@ const TaskForm: React.FC<{ onTaskAdded: () => void }> = ({ onTaskAdded }) => {
           Assign to All Users
         </Checkbox>
 
-        {/* {!isCheckboxChecked && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-4">
-            {users.map(user => (
-              <Checkbox
-                key={user._id}
-                color="primary"
-                isSelected={task.users.includes(user._id)}
-                onChange={() => handleIndividualUserSelect(user._id)}
-              >
-                {user.name}
-              </Checkbox>
-            ))}
-          </div>
-        )} */}
-
-        <Button fullWidth color="primary" type="submit">
-          Create Task
-        </Button>
+        <div className="relative group">
+          <Button
+            fullWidth
+            className={
+              !isAdmin ? "bg-gray-200 text-gray-500 cursor-not-allowed" : ""
+            }
+            color={isAdmin ? "primary" : "default"}
+            disabled={!isAdmin}
+            type="submit"
+            variant={isAdmin ? "solid" : "light"}
+          >
+            Create Task
+          </Button>
+          {!isAdmin && (
+            <span className="absolute left-1/2 top-0 mb-2 w-max bg-gray-700 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transform -translate-x-1/2 -translate-y-full">
+              You are not an admin
+            </span>
+          )}
+        </div>
       </form>
       <ToastContainer
         draggable

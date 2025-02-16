@@ -5,7 +5,7 @@ import { id as localeId } from "date-fns/locale";
 import { Button } from "@heroui/button";
 import { Input, Textarea } from "@heroui/input";
 import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
+import { toast, Bounce, ToastContainer } from "react-toastify";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import {
   Modal,
@@ -17,6 +17,7 @@ import {
 } from "@heroui/modal";
 
 import api from "@/api/api";
+import { useAuth } from "@/context/AuthContext";
 
 interface TaskListProps {
   refresh: boolean;
@@ -31,9 +32,13 @@ interface Task {
 }
 
 const TaskList: React.FC<TaskListProps> = ({ refresh }) => {
+  const { user } = useAuth(); // Mendapatkan informasi user yang sedang login
+  const isAdmin = user?.role === "admin"; // Menentukan apakah user adalah admin
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [updatedTask, setUpdatedTask] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<string>("");
+
   const {
     isOpen: isUpdateOpen,
     onOpen: onUpdateOpen,
@@ -116,37 +121,84 @@ const TaskList: React.FC<TaskListProps> = ({ refresh }) => {
             </div>
 
             <div className="flex space-x-2 mt-4">
-              <Button
-                color="primary"
-                onPress={() => {
-                  setUpdatedTask({ ...task });
-                  onUpdateOpen();
-                }}
+              {/* Update Button */}
+              <div
+                className={
+                  !isAdmin
+                    ? "relative group cursor-not-allowed"
+                    : "relative group"
+                }
               >
-                Update
-              </Button>
+                <Button
+                  className={
+                    !isAdmin
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : ""
+                  }
+                  color={isAdmin ? "primary" : "default"}
+                  disabled={!isAdmin}
+                  variant={isAdmin ? "solid" : "light"}
+                  onPress={() => {
+                    if (isAdmin) {
+                      setUpdatedTask({ ...task });
+                      onUpdateOpen();
+                    }
+                  }}
+                >
+                  Update
+                </Button>
+                {!isAdmin && (
+                  <span className="absolute left-1/2 top-0 mb-2 w-max bg-gray-700 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transform -translate-x-1/2 -translate-y-full">
+                    You are not an admin
+                  </span>
+                )}
+              </div>
 
-              <Button
-                color="danger"
-                onPress={() => {
-                  setTaskToDelete(task._id);
-                  onDeleteOpen();
-                }}
+              {/* Delete Button */}
+              <div
+                className={
+                  !isAdmin
+                    ? "relative group cursor-not-allowed"
+                    : "relative group"
+                }
               >
-                Delete
-              </Button>
+                <Button
+                  className={
+                    !isAdmin
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : ""
+                  }
+                  color={isAdmin ? "danger" : "default"}
+                  disabled={!isAdmin}
+                  variant={isAdmin ? "solid" : "light"}
+                  onPress={() => {
+                    if (isAdmin) {
+                      setTaskToDelete(task._id);
+                      onDeleteOpen();
+                    }
+                  }}
+                >
+                  Delete
+                </Button>
+                {!isAdmin && (
+                  <span className="absolute left-1/2 top-0 mb-2 w-max bg-gray-700 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transform -translate-x-1/2 -translate-y-full">
+                    You are not an admin
+                  </span>
+                )}
+              </div>
             </div>
           </AccordionItem>
         ))}
       </Accordion>
 
       {/* Update Modal */}
-      <Modal 
+      <Modal
         backdrop="blur"
         className="mx-4"
-        isOpen={isUpdateOpen} 
+        isOpen={isUpdateOpen}
         placement="center"
-        onOpenChange={onUpdateOpenChange}>
+        onOpenChange={onUpdateOpenChange}
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -233,6 +285,19 @@ const TaskList: React.FC<TaskListProps> = ({ refresh }) => {
           )}
         </ModalContent>
       </Modal>
+      <ToastContainer
+        draggable
+        pauseOnFocusLoss
+        pauseOnHover
+        autoClose={5000}
+        closeOnClick={false}
+        hideProgressBar={false}
+        newestOnTop={false}
+        position="top-right"
+        rtl={false}
+        theme="dark"
+        transition={Bounce}
+      />
     </div>
   );
 };
