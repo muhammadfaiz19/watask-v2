@@ -19,7 +19,29 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+  openGraph: {
+    title: siteConfig.name,
+    description: siteConfig.description,
+    url: "https://watask.empaiss.my.id", 
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: "/thumbnail.png",
+        width: 1200,
+        height: 630,
+        alt: "WaTask - Task Management via WhatsApp",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: ["/thumbnail.png"],
+  },
 };
+
 
 export const viewport: Viewport = {
   themeColor: [
